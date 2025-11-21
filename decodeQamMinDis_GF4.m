@@ -2,8 +2,8 @@ function [seqgf,failed_init,l] = decodeQamMinDis_GF4(code_seq, hard_d_cmplx, har
     qam4, gf4, y, h, N, M, T, w, add_mat, mul_mat, div_mat, ...
     CN_lst, nse_std, qam_binary_map, flip_num, No)
 
-    % --- Init (keep same structure) ---
-    d_deco_0   = hard_d_cmplx;        %#ok<NASGU>
+   
+    d_deco_0   = hard_d_cmplx;        
     seqgf      = hard_d_gf4;
     d_dec_f    = hard_d_cmplx;        % complex reference for metric E
     l          = 0;
@@ -20,14 +20,14 @@ function [seqgf,failed_init,l] = decodeQamMinDis_GF4(code_seq, hard_d_cmplx, har
 
     Hb = double(h > 0);
 
-    % --- Iterative flipping (same recipe) ---
+    % --- Iterative flipping 
     while (l < T)
         l = l + 1;
 
         Sb       = double(S == 0);
-        WSH      = w * Sb * Hb;                 % soft check reliability
-        % No = 2*sigma^2; here No is total 2D noise PSD you passed in
+        WSH      = w * Sb * Hb;                 
         E        = (-abs(y - d_dec_f).^2 /No) + WSH + nse_std * randn(1, N);
+        %E        = (-abs(y - d_dec_f).^2 /No) + WSH ; %without noise
         
         % pick "flip_num" most unreliable VNs
         [~, idx] = mink(E, flip_num);
@@ -44,11 +44,10 @@ function [seqgf,failed_init,l] = decodeQamMinDis_GF4(code_seq, hard_d_cmplx, har
             [~, sorted_idx]   = mink(distance, 4);   % all 4 are valid
             closest_symbols   = gf4(sorted_idx);
 
-            % choose randomly among the 2 closest (like your GF16 logic uses 6 then 4)
+            % choose randomly among the 2 closest 
             cand_idx = randi([1, 2]);
             new_symbol = closest_symbols(cand_idx);
 
-            % ensure a change (rarely the closest equals current hard decision)
             if new_symbol == temp_gf4(idx(j))
                 cand_idx = 3 - cand_idx; % flip 1 <-> 2
                 new_symbol = closest_symbols(cand_idx);
@@ -84,7 +83,7 @@ function [seqgf,failed_init,l] = decodeQamMinDis_GF4(code_seq, hard_d_cmplx, har
     seqgf = best_d_gf4;
 
     % --------------------------
-    % Post-processing (same idea)
+    % Post-processing 
     % --------------------------
     S  = decod_prod(seqgf, h, CN_lst, mul_mat, add_mat);
     Sb = double(S == 0);
@@ -96,7 +95,7 @@ function [seqgf,failed_init,l] = decodeQamMinDis_GF4(code_seq, hard_d_cmplx, har
     for ii = 1:length(unsatisfied_indices)
         idx = unsatisfied_indices(ii);
         VN_list = CN_lst{idx};
-        VN_candidates = [VN_candidates, VN_list]; %#ok<AGROW>
+        VN_candidates = [VN_candidates, VN_list]; 
     end
     VN_candidates = unique(VN_candidates);
 
