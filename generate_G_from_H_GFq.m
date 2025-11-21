@@ -27,7 +27,7 @@ H = full(H);
 q = size(add_mat,1);
 K = N - M;
 
-% --- Finite field helper functions -----------------------------
+% Finite field helper functions 
 gf_add = @(a,b) add_mat(a+1,b+1);   % 0-indexed field
 gf_mul = @(a,b) mul_mat(a+1,b+1);
 
@@ -41,7 +41,7 @@ for a = 2:q
 end
 gf_inv = @(a) inv_vec(a+1);
 
-% --- Gaussian elimination over GF(q) ---------------------------
+% Gaussian elimination over GF(q) 
 Hwork = H;
 col_perm = 1:N;
 row = 1;
@@ -87,7 +87,7 @@ for col = 1:N
     if row > M, break; end
 end
 
-% --- Attempt to find pivot columns (identity part) --------------
+% Attempt to find pivot columns (identity part) 
 pivot_cols = [];
 for i = 1:M
     col_idx = find(Hwork(i,:) == 1);
@@ -101,7 +101,7 @@ new_order = [pivot_cols non_piv];
 Hsys = Hwork(:, new_order);
 col_perm = col_perm(new_order);
 
-% --- Extract [I_M | P] and build G = [P' | I_K] ----------------
+% Extract [I_M | P] and build G = [P' | I_K] 
 P = Hsys(:, M+1:end);
 Gp = zeros(K, N);
 Gp(:, 1:M) = P.';
